@@ -7,7 +7,7 @@ Why another FSM implementation? Because we didn't see one suited for smaller-sca
 bp := fsm.New()
 bp.Start(0)
 bp.From(0).To(1)
-bp.From(1).To(2).Then(function (m *fsm.Machine) { fmt.Println("hola!") })
+bp.From(1).To(2).Then(func (m *fsm.Machine) { fmt.Println("hola!") })
 
 m := bp.Machine()
 m.State() // => a
