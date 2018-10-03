@@ -4,8 +4,11 @@ import (
 	"sort"
 )
 
+// Handler represents a callback to be called when the machine performs a
+// certain transition between states.
 type Handler func(m *Machine)
 
+// Transition represents a transition between two states.
 type Transition struct {
 	start     bool
 	from      uint8
@@ -17,7 +20,7 @@ type Transition struct {
 	fn        func(m *Machine)
 }
 
-// Sets the "from" transition
+// From sets the source state of the transition.
 func (t *Transition) From(from uint8) *Transition {
 	t.from = from
 	t.fromSet = true
@@ -25,7 +28,7 @@ func (t *Transition) From(from uint8) *Transition {
 	return t
 }
 
-// Sets the target state.
+// To sets the destination state of the transition.
 func (t *Transition) To(to uint8) *Transition {
 	t.to = to
 	t.toSet = true
@@ -33,8 +36,9 @@ func (t *Transition) To(to uint8) *Transition {
 	return t
 }
 
-// Calculates the hash if both `from` and `to` have been set,
-// then adds itself to the blueprint.
+// recalculate calculates the hash for this transition if both "from" and "to"
+// have been set. If both "from" and "to" are set then this transition will
+// also be added to the blueprint.
 func (t *Transition) recalculate() {
 	if !t.toSet || !t.fromSet {
 		return
@@ -44,37 +48,39 @@ func (t *Transition) recalculate() {
 	t.blueprint.Add(t)
 }
 
-// Sets the transition handler function.
+// Then sets the callback function for when the transition has occurred.
 func (t *Transition) Then(fn Handler) *Transition {
 	t.fn = fn
 	return t
 }
 
-// Serializes the transition to a uint16, where the first 8 bits
-// are the "from" and the last 8 bits are the "to" state
+// serialize serializes a transition between two states into a single value,
+// where the first 8 bits are the "from" and the last 8 bits are the "to"
+// state.
 func serialize(from, to uint8) uint16 {
 	return (uint16(from) << 8) | uint16(to)
 }
 
+// list represents a list of transitions.
 type list []*Transition
 
-// Implements sort.Interface.Len
+// Len returns the length of the list.
 func (t list) Len() int {
 	return len(t)
 }
 
-// Implements sort.Interface.Swap
+// Swap swaps the two elements with indexes a and b.
 func (t list) Swap(a, b int) {
 	t[a], t[b] = t[b], t[a]
 }
 
-// Implements sort.Interface.Less
+// Less returns whether the element at index a should appear before b.
 func (t list) Less(a, b int) bool {
 	return t[a].hash < t[b].hash
 }
 
-// Searches for the value in the slice. If it's not found, then
-// -1 is returned. Otherwise, its index is returned.
+// Search searches for the specified hash in the list and returns it if it is
+// present.
 func (t list) Search(x uint16) *Transition {
 	low, high := 0, len(t)-1
 	for low <= high {
@@ -91,8 +97,8 @@ func (t list) Search(x uint16) *Transition {
 	return nil
 }
 
-// Returns the position in the slice that a new transition should
-// be inserted at to preseve its sortedness.
+// InsertPos returns the index at which the specified transition should be
+// inserted into the slice to retain it's order.
 func (t list) InsertPos(v *Transition) int {
 	return sort.Search(len(t), func(i int) bool {
 		return t[i].hash >= v.hash

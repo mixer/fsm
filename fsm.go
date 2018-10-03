@@ -5,36 +5,40 @@ import (
 	"fmt"
 )
 
-// FSMs are the "interface" to manage state. They should not be
-// created directly. Rather, the should make made by blueprints.
+// Machine represents a finite state machine.
+// Instances of this struct should not be constructed by hand and instead
+// should be created using a blueprint.
 type Machine struct {
-	// List of available transitions
+	// A list of available transitions.
 	transitions list
-	// Current fsm state
+	// The current machine state.
 	state uint8
 }
 
-// Returns whether a transition to state s is legal.
+// isLegal returns whether or not the specified transition from state a to b
+// is legal.
 func (f *Machine) isLegal(a uint8, b uint8) bool {
 	return f.transitions.Search(serialize(a, b)) != nil
 }
 
-// Returns whether this can transition to the target state.
+// Allows returns whether or not this machine can transition to the state b.
 func (f *Machine) Allows(b uint8) bool {
 	return f.isLegal(f.state, b)
 }
 
-// Returns whether this is disallowed to transition to the target state.
+// Disallows returns whether or not this machine can't transition to the state
+// b.
 func (f *Machine) Disallows(b uint8) bool {
 	return !f.Allows(b)
 }
 
-// Returns the current fsm state.
+// State returns the current state.
 func (f *Machine) State() uint8 {
 	return f.state
 }
 
-// Moves the fsm to the target state. Panics if disallowed.
+// Goto moves the machine to the specified state. An error is returned if the
+// transition is not valid.
 func (f *Machine) Goto(state uint8) error {
 	t := f.transitions.Search(serialize(f.state, state))
 	if t == nil {

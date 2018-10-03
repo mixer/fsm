@@ -5,19 +5,21 @@ type Blueprint struct {
 	start       uint8
 }
 
-// Creates a new blueprint, from which fsms can be made.
+// New creates a new finite state machine blueprint.
 func New() *Blueprint {
 	return &Blueprint{
 		transitions: make(list, 0),
 	}
 }
 
-// Starts creating a new transition on the blueprint.
+// From returns a new transition for the blueprint.
+// The transition will be added to the blueprint automatically when it has both
+// "from" and "to" values.
 func (b *Blueprint) From(start uint8) *Transition {
 	return (&Transition{blueprint: b}).From(start)
 }
 
-// Adds an already complete transition to the blueprint.
+// Add adds a complete transition to the blueprint.
 func (b *Blueprint) Add(t *Transition) {
 	idx := b.transitions.InsertPos(t)
 	trans := make(list, len(b.transitions)+1)
@@ -28,12 +30,12 @@ func (b *Blueprint) Add(t *Transition) {
 	b.transitions = trans
 }
 
-// Marks the state state of the fsm.
+// Start sets the start state for the machine.
 func (b *Blueprint) Start(state uint8) {
 	b.start = state
 }
 
-// Creates a new FSM from the blueprint.
+// Machine returns a new machine created from the blueprint.
 func (b *Blueprint) Machine() *Machine {
 	fsm := &Machine{
 		state:       b.start,
