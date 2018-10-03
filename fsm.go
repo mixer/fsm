@@ -1,7 +1,6 @@
 package fsm
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -38,7 +37,7 @@ func (f *Machine) State() uint8 {
 func (f *Machine) Goto(state uint8) error {
 	t := f.transitions.Search(serialize(f.state, state))
 	if t == nil {
-		return errors.New(fmt.Sprintf("Transition %d to %d not permitted.", f.state, state))
+		return fmt.Errorf("can't transition from state %d to %d", f.state, state)
 	}
 
 	f.state = state
