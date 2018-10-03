@@ -32,7 +32,7 @@ func TestWorksNormally(t *testing.T) {
 	err := m.Goto(B)
 	assert.NotNil(t, err)
 	assert.Equal(t, C, m.State())
-	assert.Equal(t, "Transition 2 to 1 not permitted.", err.Error())
+	assert.Equal(t, "can't transition from state 2 to 1", err.Error())
 }
 
 func TestAddsHandler(t *testing.T) {
