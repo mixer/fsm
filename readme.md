@@ -1,4 +1,4 @@
-# fsm [![GoDoc](https://godoc.org/github.com/WatchBeam/fsm?status.svg)](https://godoc.org/github.com/WatchBeam/fsm) [![Build Status](https://travis-ci.org/WatchBeam/fsm.svg)](https://travis-ci.org/WatchBeam/fsm)
+# fsm [![GoDoc](https://godoc.org/github.com/mixer/fsm?status.svg)](https://godoc.org/github.com/mixer/fsm) [![Build Status](https://travis-ci.org/mixer/fsm.svg)](https://travis-ci.org/mixer/fsm)
 
 
 Why another FSM implementation? Because we didn't see one suited for smaller-scale, programmatic use in Go which was very efficient. Example use:
